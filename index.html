@@ -145,6 +145,14 @@
       </div>
     </article>
 
+    <article class="wall-panel span-12">
+      <div class="wall-panel-head">
+        <div><span class="panel-kicker">08 / PROJECT DOCUMENT</span><h2>Windmill Project Report</h2></div>
+        <a class="btn" href="reports/windmill.pdf" download="Windmill-Project-Report.pdf">⬇ Download report</a>
+      </div>
+      <p class="panel-caption">Download the project report as a PDF document.</p>
+    </article>
+
     <nav class="wall-modules span-12" aria-label="Project dashboard modules">
       <a href="#home"><span>01</span><strong>Home</strong><small>Company introduction</small></a>
       <a href="#blueprint"><span>02</span><strong>Blue Print</strong><small>Facility layout</small></a>
@@ -278,8 +286,7 @@
   <div class="pane on" id="l1">
     <h2>Loan Application Form</h2>
     <p class="loan-intro">Wind Turbine Manufacturing Plant Project — EK Wind Turbine Manufacturing Pvt. Ltd., Thoothukudi</p>
-    <form id="loanForm" class="loan-form" name="loan-application" method="POST" action="/#loan" data-netlify="true">
-      <input type="hidden" name="form-name" value="loan-application">
+    <form id="loanForm" class="loan-form" method="POST" action="/api/loan-application">
       <input type="hidden" id="loanDocsValue" name="documents_checklist" value="">
       <h3>A. Applicant Details</h3>
       <div class="fg">

@@ -115,29 +115,25 @@ loanForm.onsubmit=async event=>{
   loanSubmit.textContent='Submitting…';
 
   try{
-    if(['localhost','127.0.0.1','::1'].includes(location.hostname)){
-      throw new Error('Local preview cannot submit forms. Deploy the site to Netlify to send the application.');
-    }
     loanForm.elements.documents_checklist.value=[...loanForm.querySelectorAll('#docs input:checked')]
       .map(control=>getFieldLabel(control))
       .join(', ');
-    const response=await fetch(loanForm.action,{
+    const response=await fetch('/api/loan-application',{
       method:'POST',
-      headers:{'Content-Type':'application/x-www-form-urlencoded'},
-      body:new URLSearchParams(new FormData(loanForm)).toString()
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(Object.fromEntries(new FormData(loanForm).entries()))
     });
-    if(!response.ok){
-      throw new Error(`Netlify Forms returned ${response.status}; confirm form detection is enabled and the latest site is deployed.`);
-    }
+    const result=await response.json();
+    if(!response.ok||!result.success)throw new Error('Loan application submission failed.');
 
     submittedLoanApplication=getLoanApplicationSnapshot();
-    loanOk.textContent='Your application was submitted. Save a PDF copy using the button below.';
+    loanOk.textContent=`${result.message} Save a PDF copy using the button below.`;
     loanOk.hidden=false;
     loanDownload.hidden=false;
     loanForm.scrollIntoView({behavior:'smooth',block:'start'});
   }catch(error){
-    console.error('Loan application submission failed:',error);
-    loanError.textContent=error instanceof Error?error.message:'The application could not be submitted. Please try again.';
+    console.error('Loan application submission failed.');
+    loanError.textContent='Unable to submit the loan application. Please check your connection and try again.';
     loanError.hidden=false;
   }finally{
     loanSubmit.disabled=false;
