@@ -141,12 +141,11 @@ loanForm.onsubmit=async event=>{
   }
 };
 
-// Netlify Forms stores submissions; configure an email notification in the Netlify site settings.
+// Contact messages are delivered through the Vercel serverless API.
 const contactForm=document.getElementById('contactForm');
 const contactStatus=document.getElementById('contactStatus');
 const contactSubmit=document.getElementById('contactSubmit');
 const contactEmail='eswarakaruppasamy211@gmail.com';
-const localPreview=['localhost','127.0.0.1','::1'].includes(location.hostname);
 
 function showContactError(message){
   const subject=contactForm.elements['enquiry_subject'].value||'Website enquiry';
@@ -175,30 +174,20 @@ contactForm.onsubmit=async event=>{
   contactSubmit.textContent='Sending…';
 
   try{
-    if(localPreview){
-      showContactError('Local preview cannot submit forms. Open a prefilled message in your email app:');
-      return;
-    }
-
-    const response=await fetch(contactForm.action,{
+    const response=await fetch('/api/contact',{
       method:'POST',
-      headers:{'Content-Type':'application/x-www-form-urlencoded'},
-      body:new URLSearchParams(new FormData(contactForm)).toString()
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(Object.fromEntries(new FormData(contactForm).entries()))
     });
-    if(!response.ok){
-      if(response.status===404||response.status===405){
-        throw new Error(`Netlify Forms returned ${response.status}; check form detection and deploy settings.`);
-      }
-      throw new Error(`Netlify Forms returned ${response.status}`);
-    }
+    const result=await response.json();
+    if(!response.ok||!result.success)throw new Error('Contact message submission failed.');
 
-    contactStatus.textContent='Your message was submitted successfully. Thank you for contacting us.';
+    contactStatus.textContent=result.message;
     contactStatus.classList.add('success');
     contactForm.reset();
   }catch(error){
-    console.error('Contact form submission failed:',error);
-    const reason=error instanceof Error?error.message:'Unknown submission error';
-    showContactError(`Your message could not be submitted (${reason}). You can email us directly instead:`);
+    console.error('Contact form submission failed.');
+    showContactError('Your message could not be submitted. You can email us directly instead:');
   }finally{
     contactStatus.hidden=false;
     contactSubmit.disabled=false;
