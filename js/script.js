@@ -187,7 +187,7 @@ contactForm.onsubmit=async event=>{
     contactForm.reset();
   }catch(error){
     console.error('Contact form submission failed.');
-    showContactError('Your message could not be submitted. You can email us directly instead:');
+    showContactError('We could not send your message. Please try again or email us directly:');
   }finally{
     contactStatus.hidden=false;
     contactSubmit.disabled=false;
